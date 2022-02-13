@@ -11,9 +11,9 @@ public class ObstacleAvoidance : SteeringBehavior
     //3 raycast one forward and two variable whiskers
     private float offsetPercentage = .5f;
     //whisker is name of two side raycast
-    private float whiskerLength = 1.5f;
+    private float whiskerLength = 8.5f;
     //eyesight is name of main stright raycast
-    private float eyesightDist = 2f;
+    private float eyesightDist = 8f;
     //private float positionoffset
     private float maxAccel;
 
@@ -30,19 +30,19 @@ public class ObstacleAvoidance : SteeringBehavior
     {
         character = parentCharacter;
         maxAccel = character.maxSpeed;
-        /*lr = character.gameObject.AddComponent<LineRenderer>();
+        lr = character.gameObject.AddComponent<LineRenderer>();
         lr.startWidth = lr.endWidth = 0.1f;
         lr.material.color = Color.green;
-        lr.positionCount = 6;*/
+        lr.positionCount = 6;
     }
 
     public override SteeringOutput getSteering()
     {
-        eyesight = new Ray(character.transform.position + character.transform.forward, character.transform.forward);
-        whiskers[0] = new Ray(character.transform.position + character.transform.forward, character.transform.forward - offsetPercentage*character.transform.right);
-        whiskers[1] = new Ray(character.transform.position + character.transform.forward, character.transform.forward + offsetPercentage*character.transform.right);
+        eyesight = new Ray(character.transform.position + character.transform.forward * 1.5f, character.transform.forward);
+        whiskers[0] = new Ray(character.transform.position + character.transform.forward * 1.5f, character.transform.forward - offsetPercentage*character.transform.right);
+        whiskers[1] = new Ray(character.transform.position + character.transform.forward * 1.5f, character.transform.forward + offsetPercentage*character.transform.right);
         
-        /*Debug.DrawRay(eyesight.origin, eyesight.direction * eyesightDist, Color.green);
+        Debug.DrawRay(eyesight.origin, eyesight.direction * eyesightDist, Color.green);
         lr.SetPosition(0, eyesight.origin);
         lr.SetPosition(1, eyesight.origin + eyesight.direction * eyesightDist);
         lr.SetPosition(2, whiskers[0].origin + whiskers[0].direction * whiskerLength);
@@ -50,7 +50,7 @@ public class ObstacleAvoidance : SteeringBehavior
         lr.SetPosition(4, whiskers[1].origin + whiskers[1].direction * whiskerLength);
         lr.SetPosition(5, eyesight.origin + eyesight.direction * eyesightDist);
         Debug.DrawRay(whiskers[0].origin, whiskers[0].direction * whiskerLength, Color.yellow);
-        Debug.DrawRay(whiskers[1].origin, whiskers[1].direction * whiskerLength, Color.red);*/
+        Debug.DrawRay(whiskers[1].origin, whiskers[1].direction * whiskerLength, Color.red);
         RaycastHit eyeHit;
         RaycastHit[] whiskHit = new RaycastHit[2];
         bool eye = Physics.Raycast(eyesight, out eyeHit, eyesightDist);
@@ -61,7 +61,7 @@ public class ObstacleAvoidance : SteeringBehavior
         //turn in random direction
         eye = eye ? eyeHit.collider.tag.Equals("Obstacle") : false;
         whisks[0] = whisks[0] ? whiskHit[0].collider.tag.Equals("Obstacle") : false;
-        whisks[0] = whisks[0] ? whiskHit[1].collider.tag.Equals("Obstacle") : false;
+        whisks[1] = whisks[1] ? whiskHit[1].collider.tag.Equals("Obstacle") : false;
 
         if (!avoiding)
         {
@@ -70,7 +70,6 @@ public class ObstacleAvoidance : SteeringBehavior
                 //Debug.Log(eyeHit.distance + " " + eyeHit.collider.name);
                 accel = 0.5f * character.linearVelocity.magnitude * (eyesightDist - eyeHit.distance); //scale speed based on how far away
                 avoiding = true;
-                Debug.Log(avoiding);
                 if (!(whisks[0] ^ whisks[1]))
                     rotateDir = Random.value > 0.5 ? -1 : 1;
                 //if eye and left whisker turn right
@@ -80,21 +79,28 @@ public class ObstacleAvoidance : SteeringBehavior
                 else// if (whisks[1]) //this if is implied
                     rotateDir = -1;
             }
-            else return new SteeringOutput();
+            else if (whisks[0] ^ whisks[1])
+            {
+                rotateDir = whisks[0] ? 1 : -1;
+                avoiding = true;
+            }
+            else 
+                return new SteeringOutput();
             ///
             ///
             //maybe add somethignehwere if one whisker collides move away and have logic if both are colliding cancel out
             ///
         }
-        else if (!eye)
+        else if (!eye && !(whisks[0] ^ whisks[1]))
             avoiding = false;
         else
             accel = character.linearVelocity.magnitude * (eyesightDist - eyeHit.distance);
         //Debug.Log(avoiding + " " + eye);
-        result.linear = 0.5f *rotateDir * character.transform.right - accel * character.transform.forward;
+        result.linear = 0.5f *rotateDir * character.transform.right/* - accel * character.transform.forward*/;
         Debug.DrawRay(character.transform.position, result.linear, Color.blue);
-       // Debug.Log(rotateDir);
+        // Debug.Log(rotateDir);
         //result.linear.Normalize();
+        accel = Mathf.Max(accel, maxAccel);
         result.linear *= accel;
         result.angular = 0;
         //if middle hit and no others

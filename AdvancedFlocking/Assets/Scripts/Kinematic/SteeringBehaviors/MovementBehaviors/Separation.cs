@@ -5,7 +5,7 @@ using UnityEngine;
 public class Separation : SteeringBehavior
 {
     // the threshold to take action
-    float threshold = 5f; // 5
+    float threshold = 2.5f; // 5
 
     // the constant coefficient of decay for the inverse square law
     float decayCoefficient = 100f;
@@ -24,7 +24,7 @@ public class Separation : SteeringBehavior
             direction.Normalize();
             result.linear += strength * direction;
         }
-        Debug.Log(result.linear);
+        //Debug.Log(result.linear);
         return result;
     }
 }

@@ -22,7 +22,7 @@ public class BoidSeparation : Separation
     {
         if (fm==null)
             fm = target.GetComponent<FlockManager>();
-        Debug.Log(fm.boids.Count);
+        //Debug.Log(fm.boids.Count);
         float closestDist = float.PositiveInfinity;
         float boidDist;
         foreach(BlendedKinematic boid in fm.boids)
@@ -34,7 +34,7 @@ public class BoidSeparation : Separation
                 closestDist = boidDist;
             }
         }
-        Debug.Log(target);
+        //Debug.Log(target);
     }
 
     public override SteeringOutput getSteering()

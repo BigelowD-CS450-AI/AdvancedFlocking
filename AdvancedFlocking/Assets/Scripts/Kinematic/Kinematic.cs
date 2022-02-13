@@ -27,7 +27,7 @@ public class Kinematic : MonoBehaviour
     public virtual void Start()
     {
         steeringUpdate = new SteeringOutput(); // default to nothing. should be overriden by children
-        rb = gameObject.GetComponent<Rigidbody>();
+        //rb = gameObject.GetComponent<Rigidbody>();
         KinematicMoverFactory kmf = new KinematicMoverFactory();
         mover = kmf.Create(movementBehavior, rotationBehavior, target, maxAcceleration, maxAngularAcceleration, this);
     }
@@ -58,14 +58,14 @@ public class Kinematic : MonoBehaviour
 
         // update my position and rotation - Millington p. 58, lines 7-9
         //attempted rigidbody solutution
-        rb.MovePosition(rb.position + linearVelocity * Time.fixedDeltaTime);
+        transform.position = (transform.position + linearVelocity * Time.fixedDeltaTime);
         //old transform solution
         //this.transform.position += linearVelocity * Time.deltaTime;
         if (Mathf.Abs(angularVelocity) > 0.01f)
         {
             Vector3 v = new Vector3(0, angularVelocity, 0);
             //attempted rigidbody solutution
-            rb.MoveRotation(rb.rotation * (Quaternion.Euler(new Vector3(0, angularVelocity, 0) * Time.fixedDeltaTime) ) );
+            transform.rotation = (transform.rotation * (Quaternion.Euler(new Vector3(0, angularVelocity, 0) * Time.fixedDeltaTime) ) );
             //old transform solution
             //this.transform.eulerAngles += v * Time.deltaTime;
         }

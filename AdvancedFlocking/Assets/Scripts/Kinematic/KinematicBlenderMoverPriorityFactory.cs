@@ -2,23 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BlendedMoverType
+public class KinematicBlendedPriorityMoverFactory : KinematicMoverFactory
 {
-    Flocker
-}
-
-public class KinematicBlendedMoverFactory : KinematicMoverFactory
-{
-    public KinematicBlendedMover Create(BlendedMoverType moverType, RotationBehavior rotationBehavior, GameObject target, float maxAcceleration, float maxAngularAcceleration, Kinematic character)
+    public Flocker Create(BlendedMoverType moverType, RotationBehavior rotationBehavior, GameObject target, float maxAcceleration, float maxAngularAcceleration, Kinematic character)
     {
-        KinematicBlendedMover result = new KinematicBlendedMover();
+        List<BlendedSteeringBehavior> subresult = new List<BlendedSteeringBehavior>();
+        Flocker result = new Flocker();
         switch (moverType)
         {
             case BlendedMoverType.Flocker:
-                /*result.SetMoveType(new BlendedSteeringBehavior(new BoidSeparation(), 0.2f));
-                //result.SetMoveType(new BlendedSteeringBehavior(new BoidSeparation(), 1.0f));
-                result.SetMoveType(new BlendedSteeringBehavior(new Arrive(), 0.5f));
-                result.SetMoveType(new BlendedSteeringBehavior(new BoidVelocityMatch(), 0.3f));*/
+                //by placing obstavce avoidance first gves it higher priority
+                subresult.Add(new BlendedSteeringBehavior(new ObstacleAvoidance(character), 0.5f));
+                subresult.Add(new BlendedSteeringBehavior(new BoidSeparation(), 0.5f));
+                subresult.Add(new BlendedSteeringBehavior(new Arrive(), 0.1f));
+                result.SetMoveType(subresult);
+                subresult = new List<BlendedSteeringBehavior>();
+                subresult.Add(new BlendedSteeringBehavior(new BoidSeparation(), 0.7f));
+                subresult.Add(new BlendedSteeringBehavior(new Seek(), 0.3f));
+                subresult.Add(new BlendedSteeringBehavior(new BoidVelocityMatch(), 0.1f));
+                result.SetMoveType(subresult);
+
                 //result.SetMoveType(new BlendedSteeringBehavior(new ObstacleAvoidance(character), 15f));
                 break;
             default:

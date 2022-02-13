@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class BlendedKinematic : Kinematic
 {
-    //private Rigidbody rb;
-    //public List<GameObject> targets;
-    //public new KinematicBlendedMover mover;
-
     public BlendedMoverType movementBehavior2;
 
     // Start is called before the first frame update
@@ -22,7 +18,7 @@ public class BlendedKinematic : Kinematic
     {
         steeringUpdate = new SteeringOutput();
         steeringUpdate.linear = mover.Accelerate();
-        Debug.Log(mover + " getSteer");
+        //Debug.Log(mover + " getSteer");
         steeringUpdate.angular = mover.AngularAccelerate();
     }
 }
