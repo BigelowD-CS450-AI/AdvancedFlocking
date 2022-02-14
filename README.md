@@ -1,4 +1,4 @@
-# CubethonAdvancedSteeringAI
+# Advanced Flocking
 ## [Playable Link](https://bigelowd-cs450-ai.github.io/AdvancedFlocking/)
 
 
